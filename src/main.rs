@@ -61,9 +61,9 @@ fn generate_starting_vec(size: usize) -> Vec<u32> {
     //     new_vec.push(randomish);
     // }
 
-    let mut new_vec: Vec<u32> = vec![1; size];
+    let mut new_vec: Vec<u32> = vec![0; size];
     let midpoint = ((new_vec.len() / 2) as f32).floor();
-    new_vec[midpoint as usize] = 0;
+    new_vec[midpoint as usize] = 1;
 
     return new_vec;
 }
@@ -82,35 +82,35 @@ fn get_rule_set(rule_set: u32) -> HashMap<String, u32> {
     let mut hashmap = HashMap::new();
 
     hashmap.insert(
-        "000".to_string(),
+        "111".to_string(),
         get_u32_at_binary_string_index(&rule_set_binary, 0),
     );
     hashmap.insert(
-        "001".to_string(),
+        "110".to_string(),
         get_u32_at_binary_string_index(&rule_set_binary, 1),
     );
     hashmap.insert(
-        "010".to_string(),
+        "101".to_string(),
         get_u32_at_binary_string_index(&rule_set_binary, 2),
     );
     hashmap.insert(
-        "011".to_string(),
+        "100".to_string(),
         get_u32_at_binary_string_index(&rule_set_binary, 3),
     );
     hashmap.insert(
-        "100".to_string(),
+        "011".to_string(),
         get_u32_at_binary_string_index(&rule_set_binary, 4),
     );
     hashmap.insert(
-        "101".to_string(),
+        "010".to_string(),
         get_u32_at_binary_string_index(&rule_set_binary, 5),
     );
     hashmap.insert(
-        "110".to_string(),
+        "001".to_string(),
         get_u32_at_binary_string_index(&rule_set_binary, 6),
     );
     hashmap.insert(
-        "111".to_string(),
+        "000".to_string(),
         get_u32_at_binary_string_index(&rule_set_binary, 7),
     );
 
@@ -137,6 +137,9 @@ fn calc_new_vec(old_vec: Vec<u32>, rule_set: &HashMap<String, u32>) -> Vec<u32> 
         }
 
         let new_val = rule_set.get(&curr_key).unwrap();
+
+        // println!("{}, {}, {}, {}", i, num, curr_key, new_val);
+
         new_vec.push(*new_val);
     }
 
