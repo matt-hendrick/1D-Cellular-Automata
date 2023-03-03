@@ -1,8 +1,14 @@
-# 1d Cellular Automata in the Command Line
+# 1D Cellular Automata in the browser built with Rust/Yew/WASM
+
+This repo generates and displays evolutions of [1D Cellular Automata in the browser](https://one-d-cellular-automata.web.app/). This project was built in Rust with the Yew framework and is compiled into WebAssembly (WASM).
+
+For more info on 1D cellular automata and for visualizations of the outputs of the 256 rules, see [this Wolfram article](https://mathworld.wolfram.com/ElementaryCellularAutomaton.html).
+
+## 1D Cellular Automata in the Command Line
 
 ![1D Cellular Automata GIF](1DCellularAutomataDemo.gif)
 
-This is a simple CLI app that can display evolutions of one-dimensional cellular automata. For more info on 1D cellular automata and for visualizations of the outputs of the 256 rules, see [this Wolfram article](https://mathworld.wolfram.com/ElementaryCellularAutomaton.html)
+This repo also contains a previous iteration of this project that was a CLI app in "cmdLineAutomata.rs".
 
 Three optional parameters can be passed in to affect the displayed output in the terminal.
 

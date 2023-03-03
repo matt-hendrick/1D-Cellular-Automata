@@ -1,0 +1,68 @@
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+h2 {
+  color: #ff4742;
+}
+
+button {
+  background: #ff4742;
+  border: 0.0625em solid #ff4742;
+  border-radius: 0.375em;
+  box-shadow: rgb(0 0 0 / 10%) 0.0625em 0.125em 0.25em;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: nunito, roboto, proxima-nova, 'proxima nova', sans-serif;
+  font-size: 1em;
+  font-weight: 800;
+  line-height: 1em;
+  min-height: 2.5em;
+  outline: 0;
+  padding: 0.75em 0.875em;
+  margin: 1em;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+}
+
+.min-width-30 {
+  min-width: 30%;
+}
+
+label {
+  color: #ff4742;
+  margin-right: 0.5em;
+  font-family: nunito, roboto, proxima-nova, 'proxima nova', sans-serif;
+  font-size: 1em;
+  font-weight: 800;
+  text-align: center;
+}
+
+.cell-0 {
+  background-color: #bdcdd6;
+  color: #bdcdd6;
+  width: 1em;
+  height: 1em;
+}
+
+.cell-1 {
+  background-color: #ff4742;
+  color: #ff4742;
+  width: 1em;
+  height: 1em;
+}

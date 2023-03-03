@@ -1,88 +1,150 @@
+use gloo::timers::callback::Interval;
 use rand::Rng;
 use std::collections::HashMap;
-use std::env::args;
-use std::{thread, time};
+use wasm_bindgen::JsCast;
+use web_sys::HtmlInputElement;
+use yew::virtual_dom::VNode;
+use yew::{html, Component, Context, Html, InputEvent};
+
+pub enum Msg {
+    StartInterval,
+    Pause,
+    Clear,
+    Tick,
+    InputValue(InputEvent),
+}
+
+pub struct App {
+    messages: Vec<Vec<u32>>,
+    interval: Option<Interval>,
+    rule_set: HashMap<String, u32>,
+    current_row: Vec<u32>,
+}
+
+impl App {
+    fn pause(&mut self) {
+        self.interval = None;
+    }
+
+    fn clear(&mut self) {
+        self.messages.clear();
+        self.current_row = generate_starting_row();
+    }
+
+    fn get_cells(&self, messages: Vec<Vec<u32>>) -> Vec<VNode> {
+        let mut list: Vec<VNode> = vec![];
+
+        for message in messages.iter() {
+            list.push(html! {
+                <div class="flex justify-center">
+                    {
+                        message.iter().map(|char| {
+                            html!{<div class={format!{"cell-{}", char}}>{ " " }</div>}
+                        }).collect::<Html>()
+                    }
+                </div>
+            });
+        }
+
+        list
+    }
+}
+
+impl Component for App {
+    type Message = Msg;
+    type Properties = ();
+
+    fn create(ctx: &Context<Self>) -> Self {
+        let rule_set: HashMap<String, u32> = get_rule_set(30);
+        let current_row: Vec<u32> = generate_starting_row();
+
+        Self {
+            messages: Vec::new(),
+            interval: None,
+            rule_set: rule_set,
+            current_row: current_row,
+        }
+    }
+
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+        match msg {
+            Msg::StartInterval => {
+                let handle = {
+                    let link = ctx.link().clone();
+                    Interval::new(10, move || link.send_message(Msg::Tick))
+                };
+                self.interval = Some(handle);
+
+                true
+            }
+            Msg::Pause => {
+                self.pause();
+                true
+            }
+            Msg::Clear => {
+                self.clear();
+                true
+            }
+            Msg::Tick => {
+                self.current_row = calc_new_row(self.current_row.clone(), &self.rule_set);
+                self.messages.push(self.current_row.to_vec());
+                true
+            }
+            Msg::InputValue(event) => {
+                let target: HtmlInputElement = event
+                    .target()
+                    .unwrap()
+                    .dyn_ref::<HtmlInputElement>()
+                    .unwrap()
+                    .clone();
+                let new_ruleset = target.value_as_number() as u32;
+                if new_ruleset <= 255 {
+                    self.rule_set = get_rule_set(new_ruleset)
+                }
+                true
+            }
+        }
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        let has_job = self.interval.is_some();
+        html! {
+            <>
+                <div class="flex justify-center">
+                    <h2>{"1D Cellular Automata (Rust/WASM)"}</h2>
+                </div>
+                <div id="buttons" class="flex justify-center">
+                    <div class="flex align-center min-width-30">
+                        <label>{"Specify a ruleset between 0 and 255"}</label>
+                        <input class="min-width-30" type="number" min=0 max=255 oninput={ctx.link().callback(|e: InputEvent| Msg::InputValue(e))}/>
+                    </div>
+                    <button disabled={has_job} onclick={ctx.link().callback(|_| Msg::StartInterval)}>
+                        { "Start Interval" }
+                    </button>
+                    <button disabled={!has_job} onclick={ctx.link().callback(|_| Msg::Pause)}>
+                        { "Pause!" }
+                    </button>
+                    <button onclick={ctx.link().callback(|_| Msg::Clear)}>
+                        { "Clear!" }
+                    </button>
+                </div>
+                <div id="wrapper">
+                    <div id="messages">
+                        { self.get_cells(self.messages.to_vec())}
+                    </div>
+                </div>
+            </>
+        }
+    }
+}
 
 fn main() {
-    let mut current_row: Vec<u32> = generate_starting_row();
-    let chosen_rule_set: u32 = parse_rule_from_args();
-    println!(
-        "Rule set = {}. Binary = {chosen_rule_set:08b}",
-        chosen_rule_set
-    );
-    let rule_set: HashMap<String, u32> = get_rule_set(chosen_rule_set);
-    println!("Hashset = {:?}", rule_set);
-    print_row(&current_row);
-    loop {
-        let duration = time::Duration::from_millis(100);
-
-        thread::sleep(duration);
-        current_row = calc_new_row(current_row, &rule_set);
-        print_row(&current_row);
-    }
-}
-
-fn print_row(current_row: &Vec<u32>) {
-    for num in current_row {
-        if *num == 0 {
-            print!(".")
-        } else {
-            print!("X");
-        }
-    }
-
-    println!();
-}
-
-fn parse_rule_from_args() -> u32 {
-    if args().len() < 2 {
-        println!("No rule set specified. A random rule set will be chosen.");
-        rand::thread_rng().gen_range(0..256)
-    } else {
-        let parsed: Result<u32, std::num::ParseIntError> = args().nth(1).unwrap().parse::<u32>();
-        if parsed.is_ok() {
-            let result = parsed.unwrap();
-            if result <= 256 {
-                result
-            } else {
-                rand::thread_rng().gen_range(0..256)
-            }
-        } else {
-            rand::thread_rng().gen_range(0..256)
-        }
-    }
-}
-
-fn parse_row_size_from_args() -> usize {
-    if args().len() < 3 {
-        println!("No vec size specified. Vec will be set to to a size of 155.");
-        155
-    } else {
-        let parsed: Result<usize, std::num::ParseIntError> =
-            args().nth(2).unwrap().parse::<usize>();
-        if parsed.is_ok() {
-            parsed.unwrap()
-        } else {
-            155
-        }
-    }
-}
-
-fn parse_randomize_starting_row_from_args() -> bool {
-    if args().len() < 4 {
-        println!("No parameter passed in to randomize the starting vec. Starting vec will have a single filled in value at the midpoint.");
-        false
-    } else {
-        println!(
-            "Parameter passed in to randomize the starting vec. Starting vec will be pseudo-random"
-        );
-        true
-    }
+    yew::Renderer::<App>::new().render();
 }
 
 fn generate_starting_row() -> Vec<u32> {
-    let size: usize = parse_row_size_from_args();
-    let random_start: bool = parse_randomize_starting_row_from_args();
+    let size: usize = 125;
+    let random_start: bool = false;
 
     let mut starting_row: Vec<u32>;
 
