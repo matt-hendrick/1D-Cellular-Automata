@@ -4,6 +4,8 @@ This repo generates and displays evolutions of [1D Cellular Automata in the brow
 
 For more info on 1D cellular automata and for visualizations of the outputs of the 256 rules, see [this Wolfram article](https://mathworld.wolfram.com/ElementaryCellularAutomaton.html).
 
+---
+
 ## 1D Cellular Automata in the Command Line
 
 ![1D Cellular Automata GIF](1DCellularAutomataDemo.gif)

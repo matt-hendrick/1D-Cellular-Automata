@@ -7,7 +7,7 @@ use yew::virtual_dom::VNode;
 use yew::{html, Component, Context, Html, InputEvent};
 
 pub enum Msg {
-    StartInterval,
+    Start,
     Pause,
     Clear,
     Tick,
@@ -68,7 +68,7 @@ impl Component for App {
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::StartInterval => {
+            Msg::Start => {
                 let handle = {
                     let link = ctx.link().clone();
                     Interval::new(10, move || link.send_message(Msg::Tick))
@@ -118,8 +118,8 @@ impl Component for App {
                         <label>{"Specify a ruleset between 0 and 255"}</label>
                         <input class="min-width-30" type="number" min=0 max=255 placeholder=30 oninput={ctx.link().callback(|e: InputEvent| Msg::InputValue(e))}/>
                     </div>
-                    <button disabled={has_job} onclick={ctx.link().callback(|_| Msg::StartInterval)}>
-                        { "Start Interval" }
+                    <button disabled={has_job} onclick={ctx.link().callback(|_| Msg::Start)}>
+                        { "Start!" }
                     </button>
                     <button disabled={!has_job} onclick={ctx.link().callback(|_| Msg::Pause)}>
                         { "Pause!" }
