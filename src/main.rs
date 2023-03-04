@@ -116,7 +116,7 @@ impl Component for App {
                 <div id="buttons" class="flex justify-center">
                     <div class="flex align-center min-width-30">
                         <label>{"Specify a ruleset between 0 and 255"}</label>
-                        <input class="min-width-30" type="number" min=0 max=255 oninput={ctx.link().callback(|e: InputEvent| Msg::InputValue(e))}/>
+                        <input class="min-width-30" type="number" min=0 max=255 placeholder=30 oninput={ctx.link().callback(|e: InputEvent| Msg::InputValue(e))}/>
                     </div>
                     <button disabled={has_job} onclick={ctx.link().callback(|_| Msg::StartInterval)}>
                         { "Start Interval" }
